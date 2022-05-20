@@ -3,6 +3,8 @@ const bodyParser = require('body-parser');
 const axios = require("axios");
 const app = express();
 const port=3000
+const swaggerUi = require('swagger-ui-express'),
+swaggerDocument = require('./swagger.json');
 const UserController = require('./controllers/User')
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
@@ -37,12 +39,13 @@ app.get('/music',((req, res) => {
 app.get('/home',((req, res) => {
     res.sendFile(__dirname+'/home.html')
 }))
+
+
 app.post("/login", async(req, res) => {
     try {
         const username=req.body.username;
         const password=req.body.password;
         const useremail=await user.find({username});
-
         console.log(useremail[0].id);
         if(useremail[0].password===password){
          res.sendFile(__dirname+'/home.html')
@@ -55,7 +58,7 @@ app.post("/login", async(req, res) => {
     }
 });
 
-app.get('/log', (req, res) => {
+app.get('/login', (req, res) => {
    res.sendFile(__dirname+'/login.html')
 });
 app.post('/games',(req, res) => {
@@ -138,6 +141,8 @@ app.post('/music', (req, res) => {
         res.send("First game is " + music1)
     });
 });
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument)
+);
 app.listen(port, function () {
     console.log(`app launched at address: http://localhost:${port}`)
 })
